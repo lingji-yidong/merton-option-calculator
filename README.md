@@ -1,4 +1,4 @@
-# 💎 Merton Option Calculator
+# Merton Option Calculator
 
 A lightweight **Option Pricing Calculator** built entirely on **Cloudflare Workers**.
 
@@ -6,7 +6,6 @@ This project combines advanced financial mathematics (**Merton Model**) with a m
 
 ## ✨ Features
 
-- **⚡ Edge Computing**: Server-side rendered (SSR) directly from Cloudflare's global edge network for millisecond latency.
 - **🧮 Advanced Math**: Implements the **Merton Model** (Black-Scholes extension) to account for continuous dividend yields ($q$).
 - **📊 Real-time Greeks**: Instantly calculates risk metrics: Delta ($\Delta$), Gamma ($\Gamma$), Theta ($\Theta$), Vega ($\nu$), and Rho ($\rho$).
 - **🌍 Internationalization (i18n)**: Built-in support for **English**, **Chinese (中文)**, and **German (Deutsch)**.
@@ -18,13 +17,7 @@ This project combines advanced financial mathematics (**Merton Model**) with a m
 
 ## 🚀 Quick Start
 
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) installed.
-- A [Cloudflare](https://www.cloudflare.com/) account.
-- Wrangler CLI installed (`npm install -g wrangler`).
-
-### 1. Installation
+### 1. Clone repository
 
 Clone the repository and navigate to the project folder:
 
@@ -33,22 +26,16 @@ git clone https://github.com/lingji-yidong/merton-option-calculator.git
 cd merton-option-calculator
 ```
 
-### 2. Local Development
-
-Start a local development server to preview the app:
+### 2. Install dependencies
 
 ```bash
-npx wrangler dev
+npm install
 ```
 
-Press `b` to open the browser. The worker handles both the HTML serving and the logic.
-
-### 3. Deployment
-
-Deploy to the Cloudflare Edge network with a single command:
+### 3. Run the app
 
 ```bash
-npx wrangler deploy
+npm run dev
 ```
 
 ## 📐 The Math
@@ -75,20 +62,6 @@ $$d_2 = d_1 - \sigma\sqrt{T}$$
 - $T$: Time to maturity
 - $N(\cdot)$: Cumulative distribution function of the standard normal distribution
 
-## 📂 Project Structure
-
-```text
-.
-├── assets/
-│   └── screenshot.png
-├── src/
-│   └── index.js       # Main Worker logic (HTML generation + Request handling)
-├── wrangler.toml      # Cloudflare Workers configuration
-├── README.md          # Documentation
-└── LICENSE            # MIT License
-
-```
-
 ## ⚠️ Disclaimer
 
 **Not Financial Advice (NFA)**
@@ -102,7 +75,7 @@ This software is for **educational and informational purposes only**. The calcul
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome!
-Feel free to check the [issues page](https://www.google.com/search?q=https://github.com/lingji-yidong/merton-option-calculator/issues).
+Feel free to check the [issues page](https://github.com/lingji-yidong/merton-option-calculator/issues).
 
 ## 📄 License
 

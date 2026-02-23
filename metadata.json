@@ -1,0 +1,5 @@
+{
+  "name": "Merton.Calc",
+  "description": "Advanced Option Pricing Calculator using the Merton Model",
+  "requestFramePermissions": []
+}
