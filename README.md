@@ -1,6 +1,6 @@
 # Merton Option Calculator
 
-A lightweight **Option Pricing Calculator** built entirely on **Cloudflare Workers**.
+A lightweight **Option Pricing Calculator** built with **Cloudflare Pages**.
 
 This project combines advanced financial mathematics (**Merton Model**) with a modern, aesthetic **Glassmorphism UI**. It runs on the edge, requires no origin server, and features a responsive design with real-time Greeks calculation.
 
