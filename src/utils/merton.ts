@@ -44,7 +44,8 @@ export function calculateMerton(inputs: MertonInputs): MertonResults | null {
 
   if (isNaN(S) || isNaN(K) || isNaN(T_days)) return null;
 
-  const T = T_days / 365.0;
+  const T_raw = T_days / 365.0;
+  const T = Math.max(T_raw, 1e-6);
   const r = r_percent / 100.0;
   const v = v_percent / 100.0;
   const q = q_percent / 100.0;
@@ -54,14 +55,8 @@ export function calculateMerton(inputs: MertonInputs): MertonResults | null {
   const eqT = Math.exp(-q * T);
   const erT = Math.exp(-r * T);
 
-  let call = 0, put = 0;
-  if (T <= 0.001) {
-    call = Math.max(0, S - K);
-    put = Math.max(0, K - S);
-  } else {
-    call = S * eqT * N(d1) - K * erT * N(d2);
-    put = K * erT * N(-d2) - S * eqT * N(-d1);
-  }
+  const call = S * eqT * N(d1) - K * erT * N(d2);
+  const put = K * erT * N(-d2) - S * eqT * N(-d1);
 
   const callDelta = eqT * N(d1);
   const putDelta = eqT * (N(d1) - 1);
