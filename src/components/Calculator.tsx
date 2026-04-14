@@ -11,6 +11,8 @@ interface CalculatorProps {
 export function Calculator({ lang, setLang }: CalculatorProps) {
   const t = dictionary[lang];
 
+  const [assetType, setAssetType] = useState<'stock' | 'index'>('stock');
+
   const [inputs, setInputs] = useState<MertonInputs>({
     S: 100,
     K: 105,
@@ -71,6 +73,19 @@ export function Calculator({ lang, setLang }: CalculatorProps) {
           className="flex flex-col gap-4"
           onSubmit={(e) => e.preventDefault()}
         >
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold text-slate-600 ml-1">
+              Asset Type
+            </label>
+            <select
+              value={assetType}
+              onChange={(e) => setAssetType(e.target.value as any)}
+              className="input-field rounded-2xl font-mono text-slate-900 px-3 py-3"
+            >
+              <option value="stock">Stock</option>
+              <option value="index">Index (SPX)</option>
+            </select>
+          </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold text-slate-600 ml-1">
               {t.spot}
@@ -154,9 +169,9 @@ export function Calculator({ lang, setLang }: CalculatorProps) {
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-slate-600 ml-1">
-                {t.yield}
-              </label>
+            <label className="text-xs font-semibold text-slate-600 ml-1">
+              {assetType === 'index' ? 'Index Yield / Carry (%)' : t.yield}
+            </label>
               <input
                 type="number"
                 name="q_percent"
@@ -167,6 +182,18 @@ export function Calculator({ lang, setLang }: CalculatorProps) {
               />
             </div>
           </div>
+
+          {assetType === 'index' && (
+            <div className="text-xs text-slate-500 mt-1">
+              For indices like SPX, use implied dividend yield or carry.
+            </div>
+          )}
+
+          {assetType === 'index' && (
+            <div className="text-xs text-slate-400">
+              Assumes European-style options (SPX standard)
+            </div>
+          )}
 
           <button
             type="button"
