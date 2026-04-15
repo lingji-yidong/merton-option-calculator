@@ -38,6 +38,40 @@ npm install
 npm run dev
 ```
 
+### 4. (Optional) Configure Live Risk-Free Rate Updates
+
+By default, the calculator **automatically selects appropriate risk-free rates** based on time to expiration:
+
+- **T < 30 days** (Short-term options): Uses **3-Month Treasury Bill Rate** (DTB3)
+- **T ≥ 30 days** (Long-term options): Uses **10-Year Treasury Note Rate** (DGS10)
+
+For live real-time updates from the Federal Reserve:
+
+#### Step 1: Get a FRED API Key (Free)
+
+- Visit: https://fred.stlouisfed.org/docs/api/api_key.html
+- Sign up for a free API key
+
+#### Step 2: Create `.env` file
+
+Copy `.env.example` and create `.env`:
+
+```bash
+cp .env.example .env
+```
+
+#### Step 3: Add your API key to `.env`
+
+```
+VITE_FRED_API_KEY=your_fred_api_key_here
+```
+
+#### Step 4: Restart development server
+
+The app will now fetch live Treasury rates from the Federal Reserve API, cached for 24 hours by maturity type.
+
+**Note:** If `VITE_FRED_API_KEY` is not configured, fallback rates are used (3.62% for short-term DTB3, 4.3% for long-term DGS10).
+
 ## 📐 The Math
 
 This calculator uses the **Merton Model**, which extends the standard Black-Scholes formula to include a continuous dividend yield ($q$).

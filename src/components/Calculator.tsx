@@ -2,27 +2,73 @@ import { Activity, Calendar, Percent, TrendingUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { dictionary, Language } from "../i18n/dictionary";
 import { calculateMerton, MertonInputs, MertonResults } from "../utils/merton";
+import { fetchRiskFreeRate } from "../utils/riskFreeRate";
 
 interface CalculatorProps {
   lang: Language;
   setLang: (lang: Language) => void;
 }
 
+// Calculate days remaining until 4:00 PM ET (0DTE)
+function calculateDaysTill4PMET(): number {
+  const now = new Date();
+  // Get current time in America/New_York timezone
+  const etTime = new Date(
+    now.toLocaleString("en-US", { timeZone: "America/New_York" }),
+  );
+
+  // Create 4 PM ET for today
+  const today4PMET = new Date(
+    etTime.getFullYear(),
+    etTime.getMonth(),
+    etTime.getDate(),
+    16,
+    0,
+    0,
+    0,
+  );
+
+  // If 4 PM ET has already passed, target tomorrow's 4 PM ET
+  const target4PMET =
+    etTime >= today4PMET
+      ? new Date(today4PMET.getTime() + 24 * 60 * 60 * 1000)
+      : today4PMET;
+
+  // Calculate days remaining
+  const msRemaining = target4PMET.getTime() - etTime.getTime();
+  const daysRemaining = msRemaining / (24 * 60 * 60 * 1000);
+
+  // Return with 6 decimal places precision
+  return Math.max(0, Math.round(daysRemaining * 1000000) / 1000000);
+}
+
 export function Calculator({ lang, setLang }: CalculatorProps) {
   const t = dictionary[lang];
 
-  const [assetType, setAssetType] = useState<'stock' | 'index'>('stock');
+  const [assetType, setAssetType] = useState<"stock" | "index">("stock");
 
   const [inputs, setInputs] = useState<MertonInputs>({
     S: 100,
     K: 105,
-    T_days: 30,
+    T_days: calculateDaysTill4PMET(),
     r_percent: 3.5,
     v_percent: 25,
     q_percent: 0,
   });
 
   const [results, setResults] = useState<MertonResults | null>(null);
+
+  // Initialize risk-free rate on mount and update when T_days changes
+  useEffect(() => {
+    const initRiskFreeRate = async () => {
+      const rate = await fetchRiskFreeRate(inputs.T_days);
+      setInputs((prev) => ({
+        ...prev,
+        r_percent: rate,
+      }));
+    };
+    initRiskFreeRate();
+  }, [inputs.T_days]);
 
   useEffect(() => {
     setResults(calculateMerton(inputs));
@@ -169,9 +215,9 @@ export function Calculator({ lang, setLang }: CalculatorProps) {
               />
             </div>
             <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-slate-600 ml-1">
-              {assetType === 'index' ? 'Index Yield / Carry (%)' : t.yield}
-            </label>
+              <label className="text-xs font-semibold text-slate-600 ml-1">
+                {assetType === "index" ? "Carry (%)" : t.yield}
+              </label>
               <input
                 type="number"
                 name="q_percent"
@@ -182,18 +228,6 @@ export function Calculator({ lang, setLang }: CalculatorProps) {
               />
             </div>
           </div>
-
-          {assetType === 'index' && (
-            <div className="text-xs text-slate-500 mt-1">
-              For indices like SPX, use implied dividend yield or carry.
-            </div>
-          )}
-
-          {assetType === 'index' && (
-            <div className="text-xs text-slate-400">
-              Assumes European-style options (SPX standard)
-            </div>
-          )}
 
           <button
             type="button"

@@ -6,14 +6,30 @@ export function N(x: number): number {
   if (x > 8.0) return 1.0;
   if (x < -8.0) return 0.0;
 
-  const b1 = 0.319381530, b2 = -0.356563782, b3 = 1.781477937, b4 = -1.821255978, b5 = 1.330274429;
-  const p = 0.2316419, c = 0.39894228;
+  const b1 = 0.31938153,
+    b2 = -0.356563782,
+    b3 = 1.781477937,
+    b4 = -1.821255978,
+    b5 = 1.330274429;
+  const p = 0.2316419,
+    c = 0.39894228;
   if (x >= 0.0) {
     let t = 1.0 / (1.0 + p * x);
-    return (1.0 - c * Math.exp(-x * x / 2.0) * t * (t * (t * (t * (t * b5 + b4) + b3) + b2) + b1));
+    return (
+      1.0 -
+      c *
+        Math.exp((-x * x) / 2.0) *
+        t *
+        (t * (t * (t * (t * b5 + b4) + b3) + b2) + b1)
+    );
   } else {
     let t = 1.0 / (1.0 - p * x);
-    return (c * Math.exp(-x * x / 2.0) * t * (t * (t * (t * (t * b5 + b4) + b3) + b2) + b1));
+    return (
+      c *
+      Math.exp((-x * x) / 2.0) *
+      t *
+      (t * (t * (t * (t * b5 + b4) + b3) + b2) + b1)
+    );
   }
 }
 
@@ -44,14 +60,14 @@ export function calculateMerton(inputs: MertonInputs): MertonResults | null {
 
   if (isNaN(S) || isNaN(K) || isNaN(T_days)) return null;
 
-  const T_raw = T_days / 365.0;
-  const T = Math.max(T_raw, 1e-6);
+  const T = Math.max(T_days / 365.0, 1e-6);
   const r = r_percent / 100.0;
   const v = v_percent / 100.0;
   const q = q_percent / 100.0;
 
-  const d1 = (Math.log(S / K) + (r - q + (v * v) / 2) * T) / (v * Math.sqrt(T));
-  const d2 = d1 - v * Math.sqrt(T);
+  const sqrtT = Math.sqrt(T);
+  const d1 = (Math.log(S / K) + (r - q + (v * v) / 2) * T) / (v * sqrtT);
+  const d2 = d1 - v * sqrtT;
   const eqT = Math.exp(-q * T);
   const erT = Math.exp(-r * T);
 
@@ -60,17 +76,28 @@ export function calculateMerton(inputs: MertonInputs): MertonResults | null {
 
   const callDelta = eqT * N(d1);
   const putDelta = eqT * (N(d1) - 1);
-  const gamma = (eqT * n(d1)) / (S * v * Math.sqrt(T));
-  const vega = (S * eqT * n(d1) * Math.sqrt(T)) * 0.01;
+  const gamma = (eqT * n(d1)) / (S * v * sqrtT);
+  const vega = S * eqT * n(d1) * sqrtT * 0.01;
 
-  const term1 = -(S * eqT * n(d1) * v) / (2 * Math.sqrt(T));
-  const callTheta = (term1 + q * S * eqT * N(d1) - r * K * erT * N(d2)) / 365.0;
-  const putTheta = (term1 - q * S * eqT * N(-d1) + r * K * erT * N(-d2)) / 365.0;
+  const term1 = -(S * eqT * n(d1) * v) / (2 * sqrtT);
 
-  const callRho = (K * T * erT * N(d2)) * 0.01;
-  const putRho = (-K * T * erT * N(-d2)) * 0.01;
+  const callTheta = (term1 - q * S * eqT * N(d1) - r * K * erT * N(d2)) / 365.0;
+  const putTheta =
+    (term1 + q * S * eqT * N(-d1) + r * K * erT * N(-d2)) / 365.0;
+
+  const callRho = K * T * erT * N(d2) * 0.01;
+  const putRho = -(K * T * erT * N(-d2)) * 0.01;
 
   return {
-    call, put, callDelta, putDelta, gamma, vega, callTheta, putTheta, callRho, putRho
+    call,
+    put,
+    callDelta,
+    putDelta,
+    gamma,
+    vega,
+    callTheta,
+    putTheta,
+    callRho,
+    putRho,
   };
 }
