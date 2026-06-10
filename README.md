@@ -63,14 +63,16 @@ cp .env.example .env
 #### Step 3: Add your API key to `.env`
 
 ```
-VITE_FRED_API_KEY=your_fred_api_key_here
+FRED_API_KEY=your_fred_api_key_here
 ```
 
-#### Step 4: Restart development server
+For Cloudflare Pages, add the same `FRED_API_KEY` as a private environment variable in your Pages project settings.
 
-The app will now fetch live Treasury rates from the Federal Reserve API, cached for 24 hours by maturity type.
+#### Step 4: Restart development server or redeploy Cloudflare Pages
 
-**Note:** If `VITE_FRED_API_KEY` is not configured, fallback rates are used (3.62% for short-term DTB3, 4.3% for long-term DGS10).
+The app will now fetch live Treasury rates through `/api/risk-free-rate`, cached in the browser for 24 hours by maturity type. The FRED API key is only read by the local dev middleware or Cloudflare Pages Function, never by the browser bundle.
+
+**Note:** If `FRED_API_KEY` is not configured, fallback rates are used (3.62% for short-term DTB3, 4.3% for long-term DGS10).
 
 ## 📐 The Math
 
